@@ -4,6 +4,7 @@
 package signalling_Games_and_Modality;
 
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.engine.watcher.Watch;
 import repast.simphony.query.space.grid.MooreQuery;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
@@ -42,51 +43,30 @@ public class Sender {
     	NdPoint senderLocation = space.getLocation(this);
     	if (!busy) {
     		// get objects in the Sender's 1x1 Moore neighborhood
-    		MooreQuery<Object> nearbyObjectsQuery = 
+    		MooreQuery<Monster> nearbyObjectsQuery = 
     				new MooreQuery(grid, this, 1, 1);
-    		// find the closest idle monster and receiver in nearbyObjects
-    		double receiverMinDistance = Double.POSITIVE_INFINITY;
+    		// find the closest idle monster in nearbyObjects
     		double monsterMinDistance = Double.POSITIVE_INFINITY;
-    		Receiver closestReceiver = null;
     		Monster closestMonster = null;
-    		for (Object obj : nearbyObjectsQuery.query()) {
-				if (obj instanceof Receiver) {
-					Receiver receiver = (Receiver)obj;
-					if (!network.getEdges(receiver)
-							.iterator().hasNext()) { // i.e., if the receiver is not busy
-	    				double receiverNewDistance =
-	    						space.getDistance(senderLocation, 
-	    								space.getLocation(receiver));
-	    				if (receiverNewDistance < receiverMinDistance) {
-	    					closestReceiver = receiver;
-	    					receiverMinDistance = receiverNewDistance;
-	    				}
-					}
-    			else if (obj instanceof Monster) {
-    				Monster monster = (Monster)obj;
+    		for (Monster monster : nearbyObjectsQuery.query()) {
     				if (!network.getEdges(monster)
 							.iterator().hasNext()) { // i.e., if the monster is not busy
 	    				double monsterNewDistance =
 	    						space.getDistance(senderLocation, 
-	    								space.getLocation(obj));
+	    								space.getLocation(monster));
 	    				if (monsterNewDistance < monsterMinDistance) {
-	    					closestMonster = (Monster) obj;
+	    					closestMonster = monster;
 	    					monsterMinDistance = monsterNewDistance;
 	    				}		  		
-    				}
 				}
-				}
-    		}
+			}
     		
-    		if (closestReceiver != null && closestMonster != null) {
-        		network.addEdge(this, closestReceiver);
-        		network.addEdge(this, closestMonster);
-        		network.addEdge(closestReceiver, closestMonster);
-        		
+    		if (closestMonster != null) {
+        		network.addEdge(this, closestMonster); 
+        		this.busy = true;
     	}
     	}
     }
- 
     
     public boolean busy() {
     	return busy;
