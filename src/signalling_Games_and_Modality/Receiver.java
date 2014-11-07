@@ -9,6 +9,7 @@ import repast.simphony.engine.watcher.WatcherTriggerSchedule;
 import repast.simphony.query.space.grid.MooreQuery;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
+import repast.simphony.space.graph.Network;
 import repast.simphony.space.grid.Grid;
 
 /**
@@ -20,12 +21,14 @@ public class Receiver {
 	
 	private ContinuousSpace<Object> space;
     private Grid<Object> grid;
-    private float energy;
-    private float[][] strategy;
+    private Network<Object> network;
+    private double energy;
+    private double[][] strategy;
     private boolean busy;
 
-    public Receiver(ContinuousSpace<Object> space, Grid<Object> grid,
-    		float energy, float[][] strategy) {
+    public Receiver(ContinuousSpace<Object> space, Grid<Object> grid, 
+    		Network<Object> network,
+    		double energy, double[][] strategy) {
         this.space = space;
         this.grid = grid;
         this.energy = energy;
@@ -36,7 +39,12 @@ public class Receiver {
     @Watch(watcheeClassName = "signalling_Games_and_Modality.Sender",
     		watcheeFieldNames = "busy",
     		query = "within_Moore 1 [grid]",
-    		whenToTrigger = WatcherTriggerSchedule.IMMEDIATE)
+    		whenToTrigger = WatcherTriggerSchedule.IMMEDIATE,
+    		triggerCondition = "!network.getEdges($watchee).iterator().hasNext()",
+    		pick = 1)
+    public void engage(Sender sender) {
+		network.addEdge(this, sender); 
+    }
         		
   
     

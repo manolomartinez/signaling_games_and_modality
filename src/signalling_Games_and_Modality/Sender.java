@@ -20,14 +20,14 @@ public class Sender {
 	private ContinuousSpace<Object> space;
     private Grid<Object> grid;
     private Network<Object> network;
-    private float energy;
-    private float[][] strategy;
+    private double energy;
+    private double[][] strategy;
     private boolean busy;
     private Receiver receiverEngaged;
     private Monster monsterEngaged;
 
     public Sender(ContinuousSpace<Object> space, Grid<Object> grid,
-    		Network<Object> network, float energy, float[][] strategy) {
+    		Network<Object> network, double energy, double[][] strategy) {
         this.space = space;
         this.grid = grid;
         this.network = network;
