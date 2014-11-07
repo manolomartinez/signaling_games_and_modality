@@ -33,25 +33,25 @@ public class Receiver {
         this.grid = grid;
         this.energy = energy;
         this.strategy = strategy;
-        this.busy = busy;
+        this.network = network;
+        this.busy = false;
     }
 
     @Watch(watcheeClassName = "signalling_Games_and_Modality.Sender",
     		watcheeFieldNames = "busy",
-    		query = "within_moore 1",
+    		query = "within_moore 10",
     		whenToTrigger = WatcherTriggerSchedule.IMMEDIATE,
-    		triggerCondition = "!network.getEdges($watchee).iterator().hasNext()",
+    		triggerCondition = "$watchee.goodForReceivers() && !$watcher.busy()",
     		pick = 1)
     public void engage(Sender sender) {
+    	System.out.print(sender.toString());
+    	System.out.print(String.format("Receiver @ location %s", grid.getLocation(this)));
+    	System.out.print("\n");
 		network.addEdge(this, sender); 
     }
         		
-  
-    
     public boolean busy() {
-    	return busy;
+    	this.busy = network.getDegree(this) > 0;
+    	return this.busy;
     }
-   
-    
-
 }

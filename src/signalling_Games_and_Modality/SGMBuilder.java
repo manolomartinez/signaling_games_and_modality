@@ -42,18 +42,18 @@ public class SGMBuilder implements ContextBuilder<Object> {
 		
 		int monsterCount = 50;
 		for (int i = 0; i < monsterCount; i++) {
-			context.add(new Monster(space, grid, 0, 0));
+			context.add(new Monster(space, grid, network, 0, 0));
 		}
 		
 		int senderCount = 10;
 		for (int i = 0; i < senderCount; i++) {
-			context.add(new Sender(space, grid, network, 10, 
+			context.add(new Sender(space, grid, network, 50, 
 					Utils.initialSenderStrat));
 		}
 		
 		int receiverCount = 10;
 		for (int i = 0; i < receiverCount; i++) {
-			context.add(new Receiver(space, grid, network, 10, 
+			context.add(new Receiver(space, grid, network, 50, 
 					Utils.initialReceiverStrat));
 		}
 		
