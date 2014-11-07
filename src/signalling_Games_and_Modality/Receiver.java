@@ -38,7 +38,7 @@ public class Receiver {
 
     @Watch(watcheeClassName = "signalling_Games_and_Modality.Sender",
     		watcheeFieldNames = "busy",
-    		query = "within_Moore 1 [grid]",
+    		query = "within_moore 1",
     		whenToTrigger = WatcherTriggerSchedule.IMMEDIATE,
     		triggerCondition = "!network.getEdges($watchee).iterator().hasNext()",
     		pick = 1)
