@@ -37,7 +37,7 @@ public class SGMBuilder implements ContextBuilder<Object> {
 				new GridBuilderParameters<Object>(new WrapAroundBorders(), 
 						new SimpleGridAdder<Object>(), true, 50, 50));
 		
-		NetworkBuilder networkBuilder = new NetworkBuilder("network", context, false);
+		NetworkBuilder networkBuilder = new NetworkBuilder("network", context, true);
 		Network<Object> network = networkBuilder.buildNetwork();
 		
 		int monsterCount = 50;
@@ -54,7 +54,8 @@ public class SGMBuilder implements ContextBuilder<Object> {
 		int receiverCount = 10;
 		for (int i = 0; i < receiverCount; i++) {
 			context.add(new Receiver(space, grid, network, 50, 
-					Utils.initialReceiverStrat));
+					Utils.initialReceiverStrat,
+					Utils.initialReceiverInvestmentPolicy));
 		}
 		
 		for (Object obj : context) {
