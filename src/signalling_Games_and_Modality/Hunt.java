@@ -13,6 +13,7 @@ public class Hunt {
 	private Receiver receiver;
 	private Monster monster;
 	private Network<Object> network;
+
 	
 	private double unpreparedAttack(int type, int receiverAct) {
 		// return the payoff for a receiverAct attack 
@@ -41,14 +42,14 @@ public class Hunt {
 			switch (stage) {
 			case 0: firstRound();
 					break;
-			case 1: System.out.print("We have a stage 1\n");
+			case 1: // System.out.print("We have a stage 1\n");
 					secondRound();
 					break;
 			}
 		}
 	
 		private void firstRound() {
-			System.out.print("A hunt starts\n");
+			// System.out.print("A hunt starts\n");
 			double[] senderStrat =
 					this.sender.strategy()[this.monster.type()];
 			int senderMessage = Utils.weightedRandomChoice(senderStrat);
@@ -61,7 +62,7 @@ public class Hunt {
 				this.receiver.addEnergy(payoff);
 				dismantle();
 				monster.die();
-				System.out.print("A hunt ends in the 1st round.\n");
+				// System.out.print("A hunt ends in the 1st round.\n");
 				Context<Object> context = ContextUtils.getContext(this);
 		    	context.remove(this);
 			}
@@ -71,7 +72,7 @@ public class Hunt {
 		}
 		
 		private void secondRound() {
-			System.out.print("Second round!\n");
+			// System.out.print("Second round!\n");
 			if (monster.type() > 0) { // if monster has evolved
 				double[] senderStrat =
 						this.sender.strategy()[this.monster.type()];
@@ -84,7 +85,7 @@ public class Hunt {
 				this.receiver.addEnergy(payoff);
 				dismantle();
 				monster.die();
-				System.out.print("A hunt ends\n");
+				// System.out.print("A hunt ends\n");
 				Context<Object> context = ContextUtils.getContext(this);
 		    	context.remove(this);
 				
@@ -115,6 +116,9 @@ public class Hunt {
 			RepastEdge<Object> edgeSM = network.getEdge(sender, monster);
 			network.removeEdge(edgeRS);
 			network.removeEdge(edgeSM);
+			sender.setMyHunt(null);
+			monster.setMyHunt(null);
+			receiver.setMyHunt(null);
 			sender.relocate();
 			receiver.relocate();
 		}

@@ -27,6 +27,7 @@ public class Sender {
     private double energy;
     private double[][] strategy;
     private boolean busy;
+	private Hunt myHunt;
 
     public Sender(ContinuousSpace<Object> space, Grid<Object> grid,
     		Network<Object> network, double energy, double[][] strategy) {
@@ -36,6 +37,7 @@ public class Sender {
         this.energy = energy;
         this.strategy = strategy;
         this.busy = false;
+        this.setMyHunt(null);
     }
 
     @ScheduledMethod(start = 1, interval = 1)
@@ -104,13 +106,16 @@ public class Sender {
     
     public void timePasses() {
     	energy--;
-    	if (energy == 0) {
+    	if (energy <= 0) {
     		die();
     	}
     }
     
     public void die() {
     	Context<Object> context = ContextUtils.getContext(this);
+    	if (this.myHunt instanceof Hunt) {
+    		context.remove(this.myHunt);
+    	}
     	context.remove(this);
     }
     
@@ -120,6 +125,10 @@ public class Sender {
     
     public void addEnergy(double payoff) {
     	this.energy += payoff;
+    }
+    
+    public double getEnergy() {
+    	return this.energy;
     }
     
     public void relocate() {
@@ -135,5 +144,13 @@ public class Sender {
 		// Override default Java implementation just to have a nicer
 		// representation
 		return String.format("Sender @ location %s", grid.getLocation(this));
+	}
+
+	public Hunt getMyHunt() {
+		return myHunt;
+	}
+
+	public void setMyHunt(Hunt myHunt) {
+		this.myHunt = myHunt;
 	}  
 }

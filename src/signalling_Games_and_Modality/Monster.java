@@ -24,6 +24,7 @@ public class Monster {
     private int type; // 0: Undecided, 1: Air; 2: Sea
     private int life;
     private boolean busy;
+    private Hunt myHunt;
 
     public Monster(ContinuousSpace<Object> space, Grid<Object> grid,
     		Network<Object> network, int type, int life){
@@ -32,6 +33,7 @@ public class Monster {
         this.type = type;
         this.life = life;
         this.busy = false;
+        this.setMyHunt(null);
     }
 
     @ScheduledMethod(start = 1, interval = 1)
@@ -49,6 +51,9 @@ public class Monster {
     
     public void die() {
     	Context<Object> context = ContextUtils.getContext(this);
+    	if (this.myHunt instanceof Hunt) {
+    		context.remove(this.myHunt);
+    	}
     	context.remove(this);
 		Monster monster = new Monster(space, grid, network, 0, 0);
 		context.add(monster);
@@ -63,4 +68,12 @@ public class Monster {
     public boolean busy() {
     	return busy;
     }
+
+	public Hunt getMyHunt() {
+		return myHunt;
+	}
+
+	public void setMyHunt(Hunt myHunt) {
+		this.myHunt = myHunt;
+	}
 }

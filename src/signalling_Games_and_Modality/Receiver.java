@@ -30,6 +30,7 @@ public class Receiver {
     private double[] investmentPolicy;
     private boolean busy;
     private boolean ready;
+    private Hunt myHunt;
 
     public Receiver(ContinuousSpace<Object> space, Grid<Object> grid, 
     		Network<Object> network,
@@ -41,6 +42,7 @@ public class Receiver {
         this.investmentPolicy = investmentPolicy;
         this.network = network;
         this.busy = false;
+        this.setMyHunt(null);
     }
 
     @Watch(watcheeClassName = "signalling_Games_and_Modality.Sender",
@@ -57,6 +59,9 @@ public class Receiver {
 		busy();
 		Monster myMonster = (Monster) network.getSuccessors(sender).iterator().next();
 		Hunt hunt = new Hunt(network, sender, this, myMonster);
+		sender.setMyHunt(hunt);
+		myMonster.setMyHunt(hunt);
+		this.setMyHunt(hunt);
 		Context<Object> context = ContextUtils.getContext(this);
 		context.add(hunt);
     }
@@ -82,7 +87,7 @@ public class Receiver {
     
     public void timePasses() {
     	energy--;
-    	if (energy == 0) {
+    	if (energy <= 0) {
     		die();
     	}
     }
@@ -101,6 +106,17 @@ public class Receiver {
     
     public void die() {
     	Context<Object> context = ContextUtils.getContext(this);
+    	if (this.myHunt instanceof Hunt) {
+    		context.remove(this.myHunt);
+    	}
     	context.remove(this);
     }
+
+	public Hunt getMyHunt() {
+		return myHunt;
+	}
+
+	public void setMyHunt(Hunt myHunt) {
+		this.myHunt = myHunt;
+	}
 }
