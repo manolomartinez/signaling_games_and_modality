@@ -55,6 +55,7 @@ public class Hunt {
 			int senderMessage = Utils.weightedRandomChoice(senderStrat);
 			double[] receiverStrat =
 					this.receiver.strategy()[senderMessage];
+			// System.out.print(this.monster.type());
 			int receiverAct = Utils.weightedRandomChoice(receiverStrat);
 			if (receiverAct < 2 || monster.type() > 0) { // No second round
 				double payoff = unpreparedAttack(this.monster.type(), receiverAct);
@@ -102,7 +103,7 @@ public class Hunt {
 
 			double investment = Utils.maxInvestment * probInvestment;
 			
-			if (type + 1 == receiverAct) { // if type and attack match
+			if (type - 1 == receiverAct) { // if type and attack match
 				return Utils.payoffInvestment(
 						this.receiver.investmentPolicy()[receiverAct]) - investment;
 			}

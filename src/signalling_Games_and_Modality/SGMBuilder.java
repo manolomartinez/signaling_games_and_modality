@@ -40,20 +40,20 @@ public class SGMBuilder implements ContextBuilder<Object> {
 		NetworkBuilder networkBuilder = new NetworkBuilder("network", context, true);
 		Network<Object> network = networkBuilder.buildNetwork();
 		
-		int monsterCount = 50;
+		int monsterCount = 500;
 		for (int i = 0; i < monsterCount; i++) {
 			context.add(new Monster(space, grid, network, 0, 0));
 		}
 		
-		int senderCount = 10;
+		int senderCount = 100;
 		for (int i = 0; i < senderCount; i++) {
-			context.add(new Sender(space, grid, network, 50, 
+			context.add(new Sender(space, grid, network, 25, 
 					Utils.initialSenderStrat));
 		}
 		
-		int receiverCount = 10;
+		int receiverCount = 100;
 		for (int i = 0; i < receiverCount; i++) {
-			context.add(new Receiver(space, grid, network, 50, 
+			context.add(new Receiver(space, grid, network, 25, 
 					Utils.initialReceiverStrat,
 					Utils.initialReceiverInvestmentPolicy));
 		}
