@@ -1,5 +1,10 @@
 package signalling_Games_and_Modality;
 
+import cern.colt.matrix.DoubleFactory1D;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.impl.SparseDoubleMatrix2D;
+import cern.jet.math.Functions;
 import repast.simphony.random.RandomHelper;
 
 public class Utils {
@@ -9,60 +14,64 @@ public class Utils {
 	final static int numberOfMessages = 3;
 	final static int numberOfActs = 3;
 	
-	final static double[][] senderPureStrats =
+	final static DoubleMatrix2D senderPureStrats =
 			identityMatrix(numberOfStates, numberOfMessages);
 	
-	final static double[][] receiverPureStrats =
+	final static DoubleMatrix2D receiverPureStrats =
 			identityMatrix(numberOfMessages, numberOfActs);
 	
-	final static double[][] identityMatrix(int rows, int columns) {
-		double[][] iM;
-		iM = new double[rows][columns];
+	final static DoubleMatrix2D identityMatrix(int rows, int columns) {
+		DoubleMatrix2D iM;
+		iM = new SparseDoubleMatrix2D(rows, columns);
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				if (i == j) {
-					iM[i][j] = 1;
+					iM.set(i, j, 1);
 				}
 				else {
-					iM[i][j] = 0;
+					iM.set(i, j, 0);
 				}
 			}		
 		}
 		return iM;
 	}
 	
-	final static double[][] randomPureSenderStrat() {
-		double[][] rPSS;
-		rPSS = new double[numberOfStates][numberOfMessages];
+	final static DoubleMatrix2D randomPureSenderStrat() {
+		DoubleMatrix2D rPSS;
+		rPSS = new SparseDoubleMatrix2D(numberOfStates, numberOfMessages);
 		for (int i = 0; i < numberOfStates; i++) {
-			rPSS[i] = senderPureStrats[
-			                           RandomHelper.nextIntFromTo
-			                           (0, numberOfMessages - 1)];
+			DoubleMatrix1D randomRow = 
+					senderPureStrats.viewRow(RandomHelper.nextIntFromTo
+                    (0, numberOfMessages - 1));
+			for (int j = 0; j < numberOfMessages; j++) {
+				rPSS.set(i, j, randomRow.get(j));
+			}
 		}
 		return rPSS;
 	}
 	
-	final static double[][] randomPureReceiverStrat() {
-		double[][] rPSS;
-		rPSS = new double[numberOfMessages][numberOfActs];
+	final static DoubleMatrix2D randomPureReceiverStrat() {
+		DoubleMatrix2D rPRS;
+		rPRS = new SparseDoubleMatrix2D(numberOfMessages, numberOfActs);
 		for (int i = 0; i < numberOfMessages; i++) {
-			rPSS[i] = receiverPureStrats[
-			                           RandomHelper.nextIntFromTo(
-			                        		   0, numberOfActs - 1)];
+			DoubleMatrix1D randomRow = 
+					receiverPureStrats.viewRow(RandomHelper.nextIntFromTo
+                    (0, numberOfActs - 1));
+			for (int j = 0; j < numberOfActs; j++) {
+				rPRS.set(i, j, randomRow.get(j));
+			}
 		}
-		return rPSS;
+		return rPRS;
 	}
 	
-	final static double[] randomReceiverInvestmentPolicy() {
-		double airInv = RandomHelper.nextDoubleFromTo(0, 1);
-		double seaInv = RandomHelper.nextDoubleFromTo(0, 1);
-		double zeroInv = RandomHelper.nextDoubleFromTo(0, 1);
-		double total = airInv + seaInv + zeroInv;
-		double[] rRIP = {airInv/total, seaInv/total, zeroInv/total};
-		return rRIP;
+	final static DoubleMatrix1D randomReceiverInvestmentPolicy() {
+		DoubleMatrix1D investment = DoubleFactory1D.dense.random(3);
+		double total = investment.zSum();
+		investment.assign(Functions.div(total));
+		return investment;
 	}
 	
-	final static double[][] initialSenderStrat =
+	final static DoubleMatrix2D initialSenderStrat =
 		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
 	
 	final static double[][] initialReceiverStrat = 
@@ -79,7 +88,7 @@ public class Utils {
 			 * proportion of "zero investment" */
 		{0.3, 0.3, 0.4};
 
-	final static double maxInvestment = 2;
+	final static double maxInvestment = 20;
 	
 	final static double payoffInvestment(double investment) {
 		return (20 - 10/Math.exp(investment));
