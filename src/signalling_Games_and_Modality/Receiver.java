@@ -3,6 +3,8 @@
  */
 package signalling_Games_and_Modality;
 
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.DoubleMatrix2D;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.engine.watcher.Watch;
@@ -26,15 +28,16 @@ public class Receiver {
     private Grid<Object> grid;
     private Network<Object> network;
     private double energy;
-    private double[][] strategy;
-    private double[] investmentPolicy;
+    private DoubleMatrix2D strategy;
+    private DoubleMatrix1D investmentPolicy;
     private boolean busy;
     private boolean ready;
     private Hunt myHunt;
 
     public Receiver(ContinuousSpace<Object> space, Grid<Object> grid, 
     		Network<Object> network,
-    		double energy, double[][] strategy, double[] investmentPolicy) {
+    		double energy, DoubleMatrix2D strategy,
+    		DoubleMatrix1D investmentPolicy) {
         this.space = space;
         this.grid = grid;
         this.energy = energy;
@@ -72,11 +75,11 @@ public class Receiver {
     	return this.busy;
     }
     
-    public double[][] strategy() {
+    public DoubleMatrix2D strategy() {
     	return this.strategy;
     }
     
-    public double[] investmentPolicy() {
+    public DoubleMatrix1D investmentPolicy() {
     	return this.investmentPolicy;
     }
     

@@ -6,6 +6,7 @@ package signalling_Games_and_Modality;
 import java.util.Collection;
 import java.util.Iterator;
 
+import cern.colt.matrix.DoubleMatrix2D;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.MooreQuery;
@@ -25,12 +26,12 @@ public class Sender {
     private Grid<Object> grid;
     private Network<Object> network;
     private double energy;
-    private double[][] strategy;
+    private DoubleMatrix2D strategy;
     private boolean busy;
 	private Hunt myHunt;
 
     public Sender(ContinuousSpace<Object> space, Grid<Object> grid,
-    		Network<Object> network, double energy, double[][] strategy) {
+    		Network<Object> network, double energy, DoubleMatrix2D strategy) {
         this.space = space;
         this.grid = grid;
         this.network = network;
@@ -119,7 +120,7 @@ public class Sender {
     	context.remove(this);
     }
     
-    public double[][] strategy() {
+    public DoubleMatrix2D strategy() {
     	return this.strategy;
     }
     

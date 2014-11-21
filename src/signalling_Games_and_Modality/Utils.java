@@ -3,6 +3,7 @@ package signalling_Games_and_Modality;
 import cern.colt.matrix.DoubleFactory1D;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.jet.math.Functions;
 import repast.simphony.random.RandomHelper;
@@ -71,22 +72,29 @@ public class Utils {
 		return investment;
 	}
 	
-	final static DoubleMatrix2D initialSenderStrat =
+	static double[][] initialSenderStratArray =
 		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
 	
-	final static double[][] initialReceiverStrat = 
+	final static DoubleMatrix2D initialSenderStrat =
+		new SparseDoubleMatrix2D(initialSenderStratArray);
+	
+	static double[][] initialReceiverStratArray = 
+		{{0, 0, 1},	{1, 0, 0},{0, 1, 0}};
+		
+	final static DoubleMatrix2D initialReceiverStrat = 
 			/* Probability of air attack,
 			probability of sea attack,
 			probability of investment */
-		{{0, 0, 1},
-			{1, 0, 0},
-			{0, 1, 0}};
+			new SparseDoubleMatrix2D(initialReceiverStratArray);
 	
-	final static double[] initialReceiverInvestmentPolicy = 
+	static double[] initialReceiverInvestmentPolicyArray =
+		{0.3, 0.3, 0.4};
+	
+	final static DoubleMatrix1D initialReceiverInvestmentPolicy = 
 			/* Proportion of air investment,
 			 * proportion of sea investment,
 			 * proportion of "zero investment" */
-		{0.3, 0.3, 0.4};
+		new DenseDoubleMatrix1D(initialReceiverInvestmentPolicyArray);
 
 	final static double maxInvestment = 20;
 	
@@ -94,13 +102,13 @@ public class Utils {
 		return (20 - 10/Math.exp(investment));
 	}
 	
-	public static int weightedRandomChoice(double[] probVector) {
+	public static int weightedRandomChoice(DoubleMatrix1D probVector) {
 		// Choose an index randomly with weights given by probVector
 		int randomIndex = -1;
 		double random = Math.random();
-		for (int i = 0; i < probVector.length; ++i)
+		for (int i = 0; i < probVector.size(); ++i)
 		{
-		    random -= probVector[i];
+		    random -= probVector.get(i);
 		    if (random <= 0.0d)
 		    {
 		        randomIndex = i;

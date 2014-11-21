@@ -1,5 +1,6 @@
 package signalling_Games_and_Modality;
 
+import cern.colt.matrix.DoubleMatrix1D;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.graph.Network;
@@ -50,11 +51,11 @@ public class Hunt {
 	
 		private void firstRound() {
 			// System.out.print("A hunt starts\n");
-			double[] senderStrat =
-					this.sender.strategy()[this.monster.type()];
+			DoubleMatrix1D senderStrat =
+					this.sender.strategy().viewRow(this.monster.type());
 			int senderMessage = Utils.weightedRandomChoice(senderStrat);
-			double[] receiverStrat =
-					this.receiver.strategy()[senderMessage];
+			DoubleMatrix1D receiverStrat =
+					this.receiver.strategy().viewRow(senderMessage);
 			// System.out.print(this.monster.type());
 			int receiverAct = Utils.weightedRandomChoice(receiverStrat);
 			if (receiverAct < 2 || monster.type() > 0) { // No second round
@@ -75,11 +76,11 @@ public class Hunt {
 		private void secondRound() {
 			// System.out.print("Second round!\n");
 			if (monster.type() > 0) { // if monster has evolved
-				double[] senderStrat =
-						this.sender.strategy()[this.monster.type()];
+				DoubleMatrix1D senderStrat =
+						this.sender.strategy().viewRow(this.monster.type());
 				int senderMessage = Utils.weightedRandomChoice(senderStrat);
-				double[] receiverStrat =
-						this.receiver.strategy()[senderMessage];
+				DoubleMatrix1D receiverStrat =
+						this.receiver.strategy().viewRow(senderMessage);
 				int receiverAct = Utils.weightedRandomChoice(receiverStrat);
 				double payoff = preparedAttack(this.monster.type(), receiverAct);
 				this.sender.addEnergy(payoff);
@@ -98,14 +99,15 @@ public class Hunt {
 			// to monsters of type
 			
 			double probInvestment = 
-					this.receiver.investmentPolicy()[0] + 
-					this.receiver.investmentPolicy()[1];
+					this.receiver.investmentPolicy().get(0) + 
+					this.receiver.investmentPolicy().get(1);
 
 			double investment = Utils.maxInvestment * probInvestment;
 			
 			if (type - 1 == receiverAct) { // if type and attack match
 				return Utils.payoffInvestment(
-						this.receiver.investmentPolicy()[receiverAct]) - investment;
+						this.receiver.investmentPolicy().get(receiverAct)
+								* Utils.maxInvestment) - investment;
 			}
 			else {
 				return -1 * investment;

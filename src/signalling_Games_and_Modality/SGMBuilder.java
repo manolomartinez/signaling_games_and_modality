@@ -48,14 +48,14 @@ public class SGMBuilder implements ContextBuilder<Object> {
 		int senderCount = 100;
 		for (int i = 0; i < senderCount; i++) {
 			context.add(new Sender(space, grid, network, 25, 
-					Utils.initialSenderStrat));
+					Utils.randomPureSenderStrat()));
 		}
 		
 		int receiverCount = 100;
 		for (int i = 0; i < receiverCount; i++) {
 			context.add(new Receiver(space, grid, network, 25, 
-					Utils.initialReceiverStrat,
-					Utils.initialReceiverInvestmentPolicy));
+					Utils.randomPureReceiverStrat(),
+					Utils.randomReceiverInvestmentPolicy()));
 		}
 		
 		for (Object obj : context) {
