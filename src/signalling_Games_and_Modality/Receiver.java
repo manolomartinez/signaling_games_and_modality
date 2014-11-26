@@ -25,7 +25,6 @@ public class Receiver {
 
 	
 	private ContinuousSpace<Object> space;
-    private Grid<Object> grid;
     private Network<Object> network;
     private double energy;
     private DoubleMatrix2D strategy;
@@ -34,12 +33,11 @@ public class Receiver {
     private boolean ready;
     private Hunt myHunt;
 
-    public Receiver(ContinuousSpace<Object> space, Grid<Object> grid, 
+    public Receiver(ContinuousSpace<Object> space, 
     		Network<Object> network,
     		double energy, DoubleMatrix2D strategy,
     		DoubleMatrix1D investmentPolicy) {
         this.space = space;
-        this.grid = grid;
         this.energy = energy;
         this.strategy = strategy;
         this.investmentPolicy = investmentPolicy;
@@ -50,7 +48,7 @@ public class Receiver {
 
     @Watch(watcheeClassName = "signalling_Games_and_Modality.Sender",
     		watcheeFieldNames = "busy",
-    		query = "within_moore 10",
+    		query = "within 10",
     		whenToTrigger = WatcherTriggerSchedule.IMMEDIATE,
     		triggerCondition = "$watchee.goodForReceivers() && !$watcher.busy()",
     		pick = 1)
@@ -79,8 +77,16 @@ public class Receiver {
     	return this.strategy;
     }
     
+    public String prettyStrategy() {
+    	return this.strategy.toString();
+    }
+    
     public DoubleMatrix1D investmentPolicy() {
     	return this.investmentPolicy;
+    }
+    
+    public String prettyInvestmentPolicy() {
+    	return this.investmentPolicy.toString();
     }
     
     @ScheduledMethod(start = 1, interval = 1)
@@ -89,9 +95,12 @@ public class Receiver {
     }
     
     public void timePasses() {
-    	energy--;
+    	energy -= .2;
     	if (energy <= 0) {
     		die();
+    	}
+    	if (energy > 50) {
+    		reproduce();
     	}
     }
     
@@ -99,12 +108,14 @@ public class Receiver {
     	this.energy += payoff;
     }
     
+    public double getEnergy() {
+    	return this.energy;
+    }
+    
     public void relocate() {
     	Context<Object> context = ContextUtils.getContext(this);
     	context.remove(this);
     	context.add(this);
-    	NdPoint pt = space.getLocation(this);
-		grid.moveTo(this, (int)pt.getX(), (int)pt.getY());
     }
     
     public void die() {
@@ -114,7 +125,14 @@ public class Receiver {
     	}
     	context.remove(this);
     }
-
+    
+    public void reproduce() {
+    	Context<Object> context = ContextUtils.getContext(this);
+		Receiver receiver = new Receiver(space, network, energy * .45,
+				this.strategy ,this.investmentPolicy);
+		context.add(receiver);
+		this.energy = this.energy * .5;
+    }
 	public Hunt getMyHunt() {
 		return myHunt;
 	}

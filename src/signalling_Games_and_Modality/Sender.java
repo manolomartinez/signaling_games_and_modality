@@ -9,6 +9,7 @@ import java.util.Iterator;
 import cern.colt.matrix.DoubleMatrix2D;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.query.space.continuous.ContinuousWithin;
 import repast.simphony.query.space.grid.MooreQuery;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
@@ -23,17 +24,15 @@ import repast.simphony.util.ContextUtils;
 public class Sender {
 	
 	private ContinuousSpace<Object> space;
-    private Grid<Object> grid;
     private Network<Object> network;
     private double energy;
     private DoubleMatrix2D strategy;
     private boolean busy;
 	private Hunt myHunt;
 
-    public Sender(ContinuousSpace<Object> space, Grid<Object> grid,
+    public Sender(ContinuousSpace<Object> space,
     		Network<Object> network, double energy, DoubleMatrix2D strategy) {
         this.space = space;
-        this.grid = grid;
         this.network = network;
         this.energy = energy;
         this.strategy = strategy;
@@ -53,8 +52,8 @@ public class Sender {
     	if (!this.busy()) {
         	NdPoint senderLocation = space.getLocation(this);
     		// get objects in the Sender's 10x10 Moore neighborhood
-    		MooreQuery<Object> nearbyQuery = 
-    				new MooreQuery(grid, this, 10, 10);
+    		ContinuousWithin<Object> nearbyQuery = 
+    				new ContinuousWithin<Object>(space, this, 10);
     		Iterable<Object> nearbyIterable =
     				nearbyQuery.query();
     		// find the closest idle monster in nearbyMostersIterator
@@ -76,6 +75,7 @@ public class Sender {
     		if (closestMonster != null) {
     			// System.out.print("We have a Monster\n");
         		network.addEdge(this, closestMonster);
+        		closestMonster.setMySender(this);
         		this.busy = true;
         		}
     		// else {
@@ -106,9 +106,12 @@ public class Sender {
     }
     
     public void timePasses() {
-    	energy--;
+    	energy -= .2;
     	if (energy <= 0) {
     		die();
+    	}
+    	if (energy > 50) {
+    		reproduce();
     	}
     }
     
@@ -120,8 +123,19 @@ public class Sender {
     	context.remove(this);
     }
     
+    public void reproduce() {
+    	Context<Object> context = ContextUtils.getContext(this);
+		Sender sender = new Sender(space, network, energy * .45, this.strategy);
+		context.add(sender);
+		this.energy = this.energy *.5;
+    }
+    
     public DoubleMatrix2D strategy() {
     	return this.strategy;
+    }
+    
+    public String prettyStrategy() {
+    	return this.strategy.toString();
     }
     
     public void addEnergy(double payoff) {
@@ -136,15 +150,13 @@ public class Sender {
     	Context<Object> context = ContextUtils.getContext(this);
     	context.remove(this);
     	context.add(this);
-    	NdPoint pt = space.getLocation(this);
-		grid.moveTo(this, (int)pt.getX(), (int)pt.getY());
     }
     
     @Override
 	public String toString() {
 		// Override default Java implementation just to have a nicer
 		// representation
-		return String.format("Sender @ location %s", grid.getLocation(this));
+		return String.format("Sender @ location %s", space.getLocation(this));
 	}
 
 	public Hunt getMyHunt() {

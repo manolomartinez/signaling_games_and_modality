@@ -32,35 +32,28 @@ public class SGMBuilder implements ContextBuilder<Object> {
 						new RandomCartesianAdder<Object>(), 
 						new repast.simphony.space.continuous.WrapAroundBorders(), 50, 50);
 		
-		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
-		Grid<Object> grid = gridFactory.createGrid("grid", context, 
-				new GridBuilderParameters<Object>(new WrapAroundBorders(), 
-						new SimpleGridAdder<Object>(), true, 50, 50));
-		
 		NetworkBuilder networkBuilder = new NetworkBuilder("network", context, true);
 		Network<Object> network = networkBuilder.buildNetwork();
 		
-		int monsterCount = 500;
+		int monsterCount = 50;
 		for (int i = 0; i < monsterCount; i++) {
-			context.add(new Monster(space, grid, network, 0, 0));
+			context.add(new Monster(space, network, 0, 0));
 		}
 		
-		int senderCount = 100;
+		int senderCount = 50;
 		for (int i = 0; i < senderCount; i++) {
-			context.add(new Sender(space, grid, network, 25, 
-					Utils.randomPureSenderStrat()));
+			context.add(new Sender(space, network, 25, 
+					Utils.randomPureSenderStrat()
+					/*Utils.initialSenderStrat*/));
 		}
 		
-		int receiverCount = 100;
+		int receiverCount = 50;
 		for (int i = 0; i < receiverCount; i++) {
-			context.add(new Receiver(space, grid, network, 25, 
+			context.add(new Receiver(space, network, 25, 
 					Utils.randomPureReceiverStrat(),
-					Utils.randomReceiverInvestmentPolicy()));
-		}
-		
-		for (Object obj : context) {
-			NdPoint pt = space.getLocation(obj);
-			grid.moveTo(obj, (int)pt.getX(), (int)pt.getY());
+					Utils.randomReceiverInvestmentPolicy()
+					/*Utils.initialReceiverStrat,
+					Utils.initialReceiverInvestmentPolicy*/));
 		}
 		
 		return context;

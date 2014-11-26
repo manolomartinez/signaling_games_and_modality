@@ -19,21 +19,21 @@ import repast.simphony.util.ContextUtils;
 public class Monster {
     
     private ContinuousSpace<Object> space;
-    private Grid<Object> grid;
     private Network<Object> network;
     private int type; // 0: Undecided, 1: Air; 2: Sea
     private int life;
     private boolean busy;
     private Hunt myHunt;
+    private Sender mySender;
 
-    public Monster(ContinuousSpace<Object> space, Grid<Object> grid,
+    public Monster(ContinuousSpace<Object> space,
     		Network<Object> network, int type, int life){
         this.space = space;
-        this.grid = grid;
         this.type = type;
         this.life = life;
         this.busy = false;
         this.setMyHunt(null);
+        this.setMySender(null);
     }
 
     @ScheduledMethod(start = 1, interval = 1)
@@ -55,10 +55,8 @@ public class Monster {
     		context.remove(this.myHunt);
     	}
     	context.remove(this);
-		Monster monster = new Monster(space, grid, network, 0, 0);
+		Monster monster = new Monster(space, network, 0, 0);
 		context.add(monster);
-		NdPoint pt = space.getLocation(monster);
-		grid.moveTo(monster, (int)pt.getX(), (int)pt.getY());
     }
     
     public int type() {
@@ -75,5 +73,13 @@ public class Monster {
 
 	public void setMyHunt(Hunt myHunt) {
 		this.myHunt = myHunt;
+	}
+	
+	public Sender getMySender() {
+		return mySender;
+	}
+
+	public void setMySender(Sender mySender) {
+		this.mySender = mySender;
 	}
 }
