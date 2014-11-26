@@ -99,12 +99,17 @@ public class Receiver {
     	this.energy += payoff;
     }
     
+    public double getEnergy() {
+    	return this.energy;
+    }
+    
     public void relocate() {
     	Context<Object> context = ContextUtils.getContext(this);
-    	context.remove(this);
-    	context.add(this);
-    	NdPoint pt = space.getLocation(this);
-		grid.moveTo(this, (int)pt.getX(), (int)pt.getY());
+    	double newX = RandomHelper.nextDoubleFromTo(0, 50);
+    	double newY = RandomHelper.nextDoubleFromTo(0, 50);
+    	space.moveTo(this, newX, newY);
+		grid.moveTo(this, (int)newX, (int)newY);
+
     }
     
     public void die() {
@@ -121,5 +126,13 @@ public class Receiver {
 
 	public void setMyHunt(Hunt myHunt) {
 		this.myHunt = myHunt;
+	}
+	
+	public String prettyStrategy() {
+		return strategy.toString();
+	}
+	
+	public String prettyInvestmentPolicy() {
+		return investmentPolicy.toString();
 	}
 }

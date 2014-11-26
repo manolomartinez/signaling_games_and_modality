@@ -10,8 +10,10 @@ import cern.colt.matrix.DoubleMatrix2D;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.MooreQuery;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
+import repast.simphony.space.continuous.RandomCartesianAdder;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.util.ContextUtils;
@@ -134,10 +136,10 @@ public class Sender {
     
     public void relocate() {
     	Context<Object> context = ContextUtils.getContext(this);
-    	context.remove(this);
-    	context.add(this);
-    	NdPoint pt = space.getLocation(this);
-		grid.moveTo(this, (int)pt.getX(), (int)pt.getY());
+    	double newX = RandomHelper.nextDoubleFromTo(0, 50);
+    	double newY = RandomHelper.nextDoubleFromTo(0, 50);
+    	space.moveTo(this, newX, newY);
+		grid.moveTo(this, (int)newX, (int)newY);
     }
     
     @Override
@@ -153,5 +155,9 @@ public class Sender {
 
 	public void setMyHunt(Hunt myHunt) {
 		this.myHunt = myHunt;
-	}  
+	} 
+	
+	public String prettyStrategy() {
+		return strategy.toString();
+	}
 }
