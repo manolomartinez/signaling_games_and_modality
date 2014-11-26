@@ -113,9 +113,9 @@ public class Receiver {
     }
     
     public void relocate() {
-    	Context<Object> context = ContextUtils.getContext(this);
-    	context.remove(this);
-    	context.add(this);
+    	double newX = RandomHelper.nextDoubleFromTo(0, 50);
+    	double newY = RandomHelper.nextDoubleFromTo(0, 50);
+    	space.moveTo(this, newX, newY);
     }
     
     public void die() {

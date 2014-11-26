@@ -35,7 +35,7 @@ public class SGMBuilder implements ContextBuilder<Object> {
 		NetworkBuilder networkBuilder = new NetworkBuilder("network", context, true);
 		Network<Object> network = networkBuilder.buildNetwork();
 		
-		int monsterCount = 50;
+		int monsterCount = 25;
 		for (int i = 0; i < monsterCount; i++) {
 			context.add(new Monster(space, network, 0, 0));
 		}

@@ -51,12 +51,15 @@ public class Monster {
     
     public void die() {
     	Context<Object> context = ContextUtils.getContext(this);
-    	if (this.myHunt instanceof Hunt) {
+    	if (this.myHunt != null) {
     		context.remove(this.myHunt);
     	}
-    	context.remove(this);
-		Monster monster = new Monster(space, network, 0, 0);
-		context.add(monster);
+    	// Spawn a "new" Monster
+    	this.type = 0;
+		this.life = 0;
+    	double newX = RandomHelper.nextDoubleFromTo(0, 50);
+    	double newY = RandomHelper.nextDoubleFromTo(0, 50);
+    	space.moveTo(this, newX, newY);
     }
     
     public int type() {

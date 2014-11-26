@@ -5,17 +5,20 @@ package signalling_Games_and_Modality;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import cern.colt.matrix.DoubleMatrix2D;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.continuous.ContinuousWithin;
 import repast.simphony.query.space.grid.MooreQuery;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.util.ContextUtils;
+import repast.simphony.util.SimUtilities;
 
 /**
  * @author manolo
@@ -47,29 +50,22 @@ public class Sender {
     }
     
     private void findMonster() {
-    	// If you are not busy, find the closest idle Monster
+    	// If you are not busy, find a close enough idle Monster
     	// System.out.print(String.format("I'm at %s\n", senderLocation));
     	if (!this.busy()) {
         	NdPoint senderLocation = space.getLocation(this);
     		// get objects in the Sender's 10x10 Moore neighborhood
     		ContinuousWithin<Object> nearbyQuery = 
     				new ContinuousWithin<Object>(space, this, 10);
-    		Iterable<Object> nearbyIterable =
+    		Iterable<Object> nearbyList =
     				nearbyQuery.query();
-    		// find the closest idle monster in nearbyMostersIterator
-    		double monsterMinDistance = Double.POSITIVE_INFINITY;
     		Monster closestMonster = null;
-    		for (Object obj : nearbyIterable) {
+    		for (Object obj : nearbyList) {
     			if (obj instanceof Monster) {
     				if (network.getDegree(obj) == 0) { // i.e., if the monster is not busy
-	    				double monsterNewDistance =
-	    						space.getDistance(senderLocation, 
-	    								space.getLocation(obj));
-	    				if (monsterNewDistance < monsterMinDistance) {
-	    					closestMonster = (Monster)obj;
-	    					monsterMinDistance = monsterNewDistance;
-	    				}		  		
-    				}
+	    				closestMonster = (Monster)obj;
+	    				break;
+	    			}		  		
     			}
     		}
     		if (closestMonster != null) {
@@ -147,9 +143,9 @@ public class Sender {
     }
     
     public void relocate() {
-    	Context<Object> context = ContextUtils.getContext(this);
-    	context.remove(this);
-    	context.add(this);
+    	double newX = RandomHelper.nextDoubleFromTo(0, 50);
+    	double newY = RandomHelper.nextDoubleFromTo(0, 50);
+    	space.moveTo(this, newX, newY);
     }
     
     @Override
