@@ -97,7 +97,16 @@ public class Receiver {
     	if (energy > 50) {
     		reproduce();
     	}
-    }    
+    }
+    
+    public void reproduce() {
+    	Context<Object> context = ContextUtils.getContext(this);
+		Receiver receiver = new Receiver(space, grid, network, energy * .45,
+				this.strategy ,this.investmentPolicy);
+		context.add(receiver);
+		this.energy = this.energy * .5;
+    }
+    
     public void addEnergy(double payoff) {
     	this.energy += payoff;
     }

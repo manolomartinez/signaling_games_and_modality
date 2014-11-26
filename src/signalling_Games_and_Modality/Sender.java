@@ -107,11 +107,23 @@ public class Sender {
     	return this.busy;
     }
     
+
     public void timePasses() {
-    	energy--;
+    	energy -= .2;
     	if (energy <= 0) {
     		die();
     	}
+    	if (energy > 50) {
+    		reproduce();
+    	}
+    }
+    
+    public void reproduce() {
+    	Context<Object> context = ContextUtils.getContext(this);
+		Sender sender = new Sender(space, grid, network, energy * .45,
+				this.strategy);
+		context.add(sender);
+		this.energy = this.energy * .5;
     }
     
     public void die() {
