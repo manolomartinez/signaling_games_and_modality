@@ -73,7 +73,7 @@ public class Utils {
 	}
 	
 	static double[][] initialSenderStratArray =
-		{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+		{{1, 0, 0}, {1, 0, 0}, {1, 0, 0}};
 	
 	final static DoubleMatrix2D initialSenderStrat =
 		new SparseDoubleMatrix2D(initialSenderStratArray);
@@ -88,7 +88,7 @@ public class Utils {
 			new SparseDoubleMatrix2D(initialReceiverStratArray);
 	
 	static double[] initialReceiverInvestmentPolicyArray =
-		{0.3, 0.3, 0.4};
+		{0.2, 0.2, 0.6};
 	
 	final static DoubleMatrix1D initialReceiverInvestmentPolicy = 
 			/* Proportion of air investment,
@@ -96,10 +96,10 @@ public class Utils {
 			 * proportion of "zero investment" */
 		new DenseDoubleMatrix1D(initialReceiverInvestmentPolicyArray);
 
-	final static double maxInvestment = 20;
+	final static double maxInvestment = 1;
 	
 	final static double payoffInvestment(double investment) {
-		return (20 - 10/Math.exp(investment));
+		return (20 - 10/Math.exp(5 * investment));
 	}
 	
 	public static int weightedRandomChoice(DoubleMatrix1D probVector) {

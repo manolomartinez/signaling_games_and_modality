@@ -88,13 +88,16 @@ public class Receiver {
     	timePasses();
     }
     
+
     public void timePasses() {
-    	energy--;
+    	energy -= .2;
     	if (energy <= 0) {
     		die();
     	}
-    }
-    
+    	if (energy > 50) {
+    		reproduce();
+    	}
+    }    
     public void addEnergy(double payoff) {
     	this.energy += payoff;
     }

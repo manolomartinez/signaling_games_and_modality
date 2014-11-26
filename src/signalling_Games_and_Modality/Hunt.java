@@ -22,7 +22,7 @@ public class Hunt {
 		if (monster.type() == 0) {
 			return 1; // the payoff for hunting an undecided
 		}
-		if (type + 1 == receiverAct) { // if type and attack match
+		if (type - 1 == receiverAct) { // if type and attack match
 			return 10;
 		}
 		else {
@@ -40,6 +40,10 @@ public class Hunt {
 		
 		@ScheduledMethod(start = 1, interval = 1)
 		public void step() {
+			Context<Object> context = ContextUtils.getContext(this);
+			if (!context.contains(this.monster)) {
+				 System.out.print("This monster shouldn't be here!\n");
+			} // Avoiding multiple parties hunting the same monster
 			switch (stage) {
 			case 0: firstRound();
 					break;
