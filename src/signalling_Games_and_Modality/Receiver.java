@@ -117,8 +117,8 @@ public class Receiver {
     
     public void relocate() {
     	Context<Object> context = ContextUtils.getContext(this);
-    	double newX = RandomHelper.nextDoubleFromTo(0, 50);
-    	double newY = RandomHelper.nextDoubleFromTo(0, 50);
+    	double newX = RandomHelper.nextDoubleFromTo(0, 49);
+    	double newY = RandomHelper.nextDoubleFromTo(0, 49);
     	space.moveTo(this, newX, newY);
 		grid.moveTo(this, (int)newX, (int)newY);
 

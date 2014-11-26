@@ -103,7 +103,10 @@ public class Sender {
     }
     
     public boolean busy() {
+    	System.out.print(String.format
+    			("%d\n",network.getDegree(this)));
     	this.busy = network.getDegree(this) > 0;
+    	System.out.print("And we are fine");
     	return this.busy;
     }
     
@@ -148,8 +151,8 @@ public class Sender {
     
     public void relocate() {
     	Context<Object> context = ContextUtils.getContext(this);
-    	double newX = RandomHelper.nextDoubleFromTo(0, 50);
-    	double newY = RandomHelper.nextDoubleFromTo(0, 50);
+    	double newX = RandomHelper.nextDoubleFromTo(0, 49);
+    	double newY = RandomHelper.nextDoubleFromTo(0, 49);
     	space.moveTo(this, newX, newY);
 		grid.moveTo(this, (int)newX, (int)newY);
     }
