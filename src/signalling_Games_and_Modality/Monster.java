@@ -19,15 +19,13 @@ import repast.simphony.util.ContextUtils;
 public class Monster {
     
     private ContinuousSpace<Object> space;
-    private Network<Object> network;
     private int type; // 0: Undecided, 1: Air; 2: Sea
     private int life;
     private boolean busy;
     private Hunt myHunt;
     private Sender mySender;
 
-    public Monster(ContinuousSpace<Object> space,
-    		Network<Object> network, int type, int life){
+    public Monster(ContinuousSpace<Object> space, int type, int life){
         this.space = space;
         this.type = type;
         this.life = life;
@@ -39,7 +37,7 @@ public class Monster {
     @ScheduledMethod(start = 1, interval = 1)
     public void step() {
     	life++;
-    	if (life >= 10) {
+    	if (life >= 2) {
     		if (type == 0) {
     			type = RandomHelper.nextIntFromTo(1, 2);
     			life = 0;
@@ -55,11 +53,9 @@ public class Monster {
     		context.remove(this.myHunt);
     	}
     	// Spawn a "new" Monster
-    	this.type = 0;
-		this.life = 0;
-    	double newX = RandomHelper.nextDoubleFromTo(0, 50);
-    	double newY = RandomHelper.nextDoubleFromTo(0, 50);
-    	space.moveTo(this, newX, newY);
+    	context.remove(this);
+    	Monster monster = new Monster(space, 0, 0);
+    	context.add(monster);
     }
     
     public int type() {
@@ -84,5 +80,12 @@ public class Monster {
 
 	public void setMySender(Sender mySender) {
 		this.mySender = mySender;
+	}
+	
+	@Override
+	public String toString() {
+		// Override default Java implementation just to have a nicer
+		// representation
+		return String.format("Monster @ location %s", space.getLocation(this));
 	}
 }

@@ -25,43 +25,43 @@ public class Receiver {
 
 	
 	private ContinuousSpace<Object> space;
-    private Network<Object> network;
     private double energy;
     private DoubleMatrix2D strategy;
     private DoubleMatrix1D investmentPolicy;
     private boolean busy;
-    private boolean ready;
     private Hunt myHunt;
+    private Monster myMonster;
+    private Sender mySender;
 
     public Receiver(ContinuousSpace<Object> space, 
-    		Network<Object> network,
     		double energy, DoubleMatrix2D strategy,
     		DoubleMatrix1D investmentPolicy) {
         this.space = space;
         this.energy = energy;
         this.strategy = strategy;
         this.investmentPolicy = investmentPolicy;
-        this.network = network;
         this.busy = false;
         this.setMyHunt(null);
+        this.setMyMonster(null);
+        this.setMySender(null);
     }
 
     @Watch(watcheeClassName = "signalling_Games_and_Modality.Sender",
-    		watcheeFieldNames = "busy",
+    		watcheeFieldNames = "goodForReceivers",
     		query = "within 10",
     		whenToTrigger = WatcherTriggerSchedule.IMMEDIATE,
     		triggerCondition = "$watchee.goodForReceivers() && !$watcher.busy()",
     		pick = 1)
     public void engage(Sender sender) {
-    	// System.out.print(sender.toString());
-    	// System.out.print(String.format("Receiver @ location %s", grid.getLocation(this)));
+    	// System.out.println(sender.toString());
+    	// System.out.println(String.format("Receiver @ location %s", space.getLocation(this)));
     	// System.out.print("\n");
-		network.addEdge(this, sender);
+		this.setMySender(sender);
 		busy();
-		Monster myMonster = (Monster) network.getSuccessors(sender).iterator().next();
-		Hunt hunt = new Hunt(network, sender, this, myMonster);
+		this.setMyMonster(sender.getMyMonster());
+		Hunt hunt = new Hunt(sender, this, this.myMonster);
 		sender.setMyHunt(hunt);
-		myMonster.setMyHunt(hunt);
+		this.myMonster.setMyHunt(hunt);
 		this.setMyHunt(hunt);
 		Context<Object> context = ContextUtils.getContext(this);
 		context.add(hunt);
@@ -69,7 +69,7 @@ public class Receiver {
     
     
     public boolean busy() {
-    	this.busy = network.getDegree(this) > 0;
+    	this.busy = this.getMyHunt() != null;
     	return this.busy;
     }
     
@@ -95,16 +95,17 @@ public class Receiver {
     }
     
     public void timePasses() {
-    	energy -= .2;
+    	energy -= .5;
     	if (energy <= 0) {
     		die();
     	}
-    	if (energy > 50) {
+    	if (energy > Utils.reproducingEnergy) {
     		reproduce();
     	}
     }
     
     public void addEnergy(double payoff) {
+    	// System.out.print(String.format("payoff: %f\n", payoff));
     	this.energy += payoff;
     }
     
@@ -115,12 +116,13 @@ public class Receiver {
     public void relocate() {
     	double newX = RandomHelper.nextDoubleFromTo(0, 50);
     	double newY = RandomHelper.nextDoubleFromTo(0, 50);
+    	System.out.println("Relocate receiver!");
     	space.moveTo(this, newX, newY);
     }
     
     public void die() {
     	Context<Object> context = ContextUtils.getContext(this);
-    	if (this.myHunt instanceof Hunt) {
+    	if (this.myHunt != null) {
     		context.remove(this.myHunt);
     	}
     	context.remove(this);
@@ -128,8 +130,17 @@ public class Receiver {
     
     public void reproduce() {
     	Context<Object> context = ContextUtils.getContext(this);
-		Receiver receiver = new Receiver(space, network, energy * .45,
+    	double mutationProb = RandomHelper.nextDoubleFromTo(0, 1);
+    	Receiver receiver;
+    	if (mutationProb < 0.9) {
+    		receiver = new Receiver(space, energy * .45,
 				this.strategy ,this.investmentPolicy);
+    	}
+    	else {
+    		receiver = new Receiver(space, energy * .45,
+    				Utils.perturb(this.strategy) ,
+    				Utils.perturb(this.investmentPolicy));
+    	}
 		context.add(receiver);
 		this.energy = this.energy * .5;
     }
@@ -140,4 +151,20 @@ public class Receiver {
 	public void setMyHunt(Hunt myHunt) {
 		this.myHunt = myHunt;
 	}
+	public Monster getMyMonster() {
+		return myMonster;
+	}
+
+	public void setMyMonster(Monster myMonster) {
+		this.myMonster = myMonster;
+	}
+	
+	public Sender getMySender() {
+		return mySender;
+	}
+
+	public void setMySender(Sender mySender) {
+		this.mySender = mySender;
+	}
+	
 }
