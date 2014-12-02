@@ -9,6 +9,7 @@ import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.engine.watcher.Watch;
 import repast.simphony.engine.watcher.WatcherTriggerSchedule;
+import repast.simphony.query.space.continuous.ContinuousWithin;
 import repast.simphony.query.space.grid.MooreQuery;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -45,32 +46,53 @@ public class Receiver {
         this.setMyMonster(null);
         this.setMySender(null);
     }
-
-    @Watch(watcheeClassName = "signalling_Games_and_Modality.Sender",
-    		watcheeFieldNames = "goodForReceivers",
-    		query = "within 10",
-    		whenToTrigger = WatcherTriggerSchedule.IMMEDIATE,
-    		triggerCondition = "$watchee.goodForReceivers() && !$watcher.busy()",
-    		pick = 1)
-    public void engage(Sender sender) {
-    	// System.out.println(sender.toString());
-    	// System.out.println(String.format("Receiver @ location %s", space.getLocation(this)));
-    	// System.out.print("\n");
-		this.setMySender(sender);
-		busy();
-		this.setMyMonster(sender.getMyMonster());
-		Hunt hunt = new Hunt(sender, this, this.myMonster);
-		sender.setMyHunt(hunt);
-		this.myMonster.setMyHunt(hunt);
-		this.setMyHunt(hunt);
-		Context<Object> context = ContextUtils.getContext(this);
-		context.add(hunt);
+    
+    @ScheduledMethod(start = 1, interval = 1)
+    public void step() {
+    	findSender();
+    	timePasses();
     }
     
-    
-    public boolean busy() {
-    	this.busy = this.getMyHunt() != null;
-    	return this.busy;
+    private void findSender() {
+    	// If you are not busy, find a close enough Sender with Monster
+    	// System.out.print(String.format("I'm at %s\n", senderLocation));
+    	if (this.getMySender() == null) {
+        	NdPoint receiverLocation = space.getLocation(this);
+    		// get objects in the Receiver's 10x10 Moore neighborhood
+    		ContinuousWithin<Object> nearbyQuery = 
+    				new ContinuousWithin<Object>(space, this, 20);
+    		Iterable<Object> nearbyList =
+    				nearbyQuery.query();
+    		Sender closestSender = null;
+    		for (Object obj : nearbyList) {
+    			if (obj instanceof Sender) {
+    				// System.out.print(obj.toString());
+    				if (((Sender) obj).getMyMonster() != null && ((Sender) obj).getMyReceiver() == null) {
+    					// i.e., if the sender has a monster but no receiver
+	    				closestSender = (Sender) obj;
+	    				break;
+	    			}		  		
+    			}
+    		}
+    		if (closestSender != null) {
+    			// System.out.print("We have a Monster\n");
+        		this.setMySender(closestSender);
+        		closestSender.setMyReceiver(this);
+        		this.setMyMonster(closestSender.getMyMonster());
+        		Hunt hunt = new Hunt(this.mySender, this, this.myMonster);
+        		this.mySender.setMyHunt(hunt);
+        		this.myMonster.setMyHunt(hunt);
+        		this.setMyHunt(hunt);
+        		Context<Object> context = ContextUtils.getContext(this);
+        		context.add(hunt);
+        		}
+    		else {
+    				// System.out.print("No Monsters!\n");
+    		}
+    		}
+    	// else {
+    	//	System.out.print("Busy!\n");
+    	// }
     }
     
     public DoubleMatrix2D strategy() {
@@ -89,13 +111,8 @@ public class Receiver {
     	return this.investmentPolicy.toString();
     }
     
-    @ScheduledMethod(start = 1, interval = 1)
-    public void step() {
-    	timePasses();
-    }
-    
     public void timePasses() {
-    	energy -= .5;
+    	energy -= 1;
     	if (energy <= 0) {
     		die();
     	}
@@ -122,8 +139,12 @@ public class Receiver {
     
     public void die() {
     	Context<Object> context = ContextUtils.getContext(this);
+    	if (this.mySender != null) {
+    		this.mySender.setMyReceiver(null);
+        }
     	if (this.myHunt != null) {
     		context.remove(this.myHunt);
+    		this.myHunt.dismantle();
     	}
     	context.remove(this);
     }
@@ -145,14 +166,14 @@ public class Receiver {
 		this.energy = this.energy * .5;
     }
 	public Hunt getMyHunt() {
-		return myHunt;
+		return this.myHunt;
 	}
 
 	public void setMyHunt(Hunt myHunt) {
 		this.myHunt = myHunt;
 	}
 	public Monster getMyMonster() {
-		return myMonster;
+		return this.myMonster;
 	}
 
 	public void setMyMonster(Monster myMonster) {
@@ -160,7 +181,7 @@ public class Receiver {
 	}
 	
 	public Sender getMySender() {
-		return mySender;
+		return this.mySender;
 	}
 
 	public void setMySender(Sender mySender) {

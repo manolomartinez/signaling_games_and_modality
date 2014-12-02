@@ -48,26 +48,33 @@ public class Monster {
     }
     
     public void die() {
+    	if (this.mySender != null) {
+    		this.mySender.setMyMonster(null);
+    		if (this.mySender.getMyReceiver() != null) {
+    				this.mySender.getMyReceiver().setMyMonster(null);
+    		}
+    	}
     	Context<Object> context = ContextUtils.getContext(this);
     	if (this.myHunt != null) {
     		context.remove(this.myHunt);
+    		this.myHunt.dismantle();
     	}
-    	// Spawn a "new" Monster
+    	// Spawn a new Monster
     	context.remove(this);
     	Monster monster = new Monster(space, 0, 0);
     	context.add(monster);
     }
     
     public int type() {
-    	return type;
+    	return this.type;
     }
     
     public boolean busy() {
-    	return busy;
+    	return this.busy;
     }
 
 	public Hunt getMyHunt() {
-		return myHunt;
+		return this.myHunt;
 	}
 
 	public void setMyHunt(Hunt myHunt) {
@@ -75,7 +82,7 @@ public class Monster {
 	}
 	
 	public Sender getMySender() {
-		return mySender;
+		return this.mySender;
 	}
 
 	public void setMySender(Sender mySender) {

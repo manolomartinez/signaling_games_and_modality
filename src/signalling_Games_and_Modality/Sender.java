@@ -42,6 +42,7 @@ public class Sender {
         this.strategy = strategy;
         this.busy = false;
         this.goodForReceivers = false;
+        this.setMyMonster(null);
         this.setMyHunt(null);
         this.setMyReceiver(null);
     }
@@ -51,6 +52,19 @@ public class Sender {
     	goodForReceivers();
     	findMonster();
     	timePasses();
+    }
+    
+    
+    public boolean goodForReceivers() {
+    	this.goodForReceivers = this.getMyMonster() != null &&
+    			this.getMyReceiver() == null;
+    	// if (gfR) {
+    	//	System.out.print("Good");
+    	//}
+    	//else {
+    	//	System.out.print("Bad");
+    	//}
+    	return this.goodForReceivers;	
     }
     
     private void findMonster() {
@@ -88,26 +102,8 @@ public class Sender {
     	// }
     }
     
-    public boolean goodForReceivers() {
-    	this.goodForReceivers = this.getMyMonster() != null &&
-    			this.getMyReceiver() == null;
-    	// if (gfR) {
-    	//	System.out.print("Good");
-    	//}
-    	//else {
-    	//	System.out.print("Bad");
-    	//}
-    	return this.goodForReceivers;
-    	
-    }
-    
-    public boolean busy() {
-    	this.busy = this.getMyMonster() != null || this.getMyReceiver() != null;
-    	return this.busy;
-    }
-    
     public void timePasses() {
-    	energy -= .5;
+    	energy -= 1;
     	if (energy <= 0) {
     		die();
     	}
@@ -118,8 +114,15 @@ public class Sender {
     
     public void die() {
     	Context<Object> context = ContextUtils.getContext(this);
+    	if (this.myReceiver != null) {
+    		this.myReceiver.setMySender(null);
+    	}
+    	if (this.myMonster != null) {
+    		this.myMonster.setMySender(null);
+    	}
     	if (this.myHunt != null) {
     		context.remove(this.myHunt);
+    		this.myHunt.dismantle();
     	}
     	context.remove(this);
     }
@@ -128,7 +131,7 @@ public class Sender {
     	Context<Object> context = ContextUtils.getContext(this);
     	double mutationProb = RandomHelper.nextDoubleFromTo(0, 1);
     	Sender sender;
-    	if (mutationProb < 0.5) {
+    	if (mutationProb < 0.9) {
     		sender =
     			new Sender(space, energy * .45, this.strategy);
     	}
@@ -176,7 +179,7 @@ public class Sender {
 	}
 
 	public Hunt getMyHunt() {
-		return myHunt;
+		return this.myHunt;
 	}
 
 	public void setMyHunt(Hunt myHunt) {
@@ -184,7 +187,7 @@ public class Sender {
 	}  
 	
 	public Monster getMyMonster() {
-		return myMonster;
+		return this.myMonster;
 	}
 
 	public void setMyMonster(Monster myMonster) {
@@ -192,7 +195,7 @@ public class Sender {
 	} 
 	
 	public Receiver getMyReceiver() {
-		return myReceiver;
+		return this.myReceiver;
 	}
 
 	public void setMyReceiver(Receiver myReceiver) {

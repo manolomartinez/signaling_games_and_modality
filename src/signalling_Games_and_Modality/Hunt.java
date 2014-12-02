@@ -14,27 +14,15 @@ public class Hunt {
 	private Receiver receiver;
 	private Monster monster;
 	
-	private double unpreparedAttack(int type, int receiverAct) {
-		// return the payoff for a receiverAct attack 
-		// to monsters of type
-		if (monster.type() == 0) {
-			return 0; // the payoff for hunting an undecided. If it is positive, quick hunters predominate
-		}
-		if (type - 1 == receiverAct) { // if type and attack match
-			return 10;
-		}
-		else {
-			return 0;
-		}
-	}
-
+	
 	public Hunt(Sender sender, Receiver receiver, Monster monster) {
 		this.sender = sender;
 		this.receiver = receiver;
 		this.monster = monster;
 		this.stage = 0;
 	}
-		
+	
+	
 		@ScheduledMethod(start = 1, interval = 1)
 		public void step() {
 			if (sender == null || receiver == null || monster == null) {
@@ -100,6 +88,20 @@ public class Hunt {
 			}
 		}
 
+		private double unpreparedAttack(int type, int receiverAct) {
+			// return the payoff for a receiverAct attack 
+			// to monsters of type
+			if (monster.type() == 0) {
+				return 0; // the payoff for hunting an undecided. If it is positive, quick hunters predominate
+			}
+			if (type - 1 == receiverAct) { // if type and attack match
+				return 10;
+			}
+			else {
+				return 0;
+			}
+		}
+
 		private double preparedAttack(int type, int receiverAct) {
 			// return the payoff for a receiverAct attack 
 			// to monsters of type
@@ -119,7 +121,7 @@ public class Hunt {
 			}
 		}
 		
-		private void dismantle() {
+		void dismantle() {
 			this.receiver.setMySender(null);
 			this.sender.setMyReceiver(null);
 			this.sender.setMyMonster(null);
@@ -127,9 +129,6 @@ public class Hunt {
 			this.sender.setMyHunt(null);
 			this.monster.setMyHunt(null);
 			this.receiver.setMyHunt(null);
-			this.sender.busy();
-			this.receiver.busy();
-			this.monster.busy();
 			this.sender.relocate();
 			this.receiver.relocate();
 		}

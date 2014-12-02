@@ -32,12 +32,12 @@ public class SGMBuilder implements ContextBuilder<Object> {
 						new RandomCartesianAdder<Object>(), 
 						new repast.simphony.space.continuous.WrapAroundBorders(), 50, 50);
 		
-		int monsterCount = 500;
+		int monsterCount = 50;
 		for (int i = 0; i < monsterCount; i++) {
 			context.add(new Monster(space, 0, 0));
 		}
 		
-		int senderCount = 3;
+		int senderCount = 50;
 		for (int i = 0; i < senderCount; i++) {
 			context.add(new Sender(space, Utils.startingEnergy, 
 					Utils.randomPureSenderStrat()
