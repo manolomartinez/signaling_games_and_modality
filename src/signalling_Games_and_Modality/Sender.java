@@ -166,7 +166,7 @@ public class Sender {
     	else{
 	    	double newX = RandomHelper.nextDoubleFromTo(0, 50);
 	    	double newY = RandomHelper.nextDoubleFromTo(0, 50);
-	    	System.out.println("Relocate sender!");
+	    	/*System.out.println("Relocate sender!");*/
 	    	space.moveTo(this, newX, newY);
     	}
     }

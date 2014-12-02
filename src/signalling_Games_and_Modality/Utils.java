@@ -18,6 +18,7 @@ public class Utils {
 	final static int numberOfActs = 3;
 	final static int startingEnergy = 100;
 	final static int reproducingEnergy = 150;
+	final static double probAir = 0.1; // probability of evo to air monster
 	
 	final static DoubleMatrix2D senderPureStrats =
 			identityMatrix(numberOfStates, numberOfMessages);
@@ -122,7 +123,7 @@ public class Utils {
 		return randomIndex;
 	}
 	
-	public static DoubleMatrix1D perturb(DoubleMatrix1D probVector) {
+	/*public static DoubleMatrix1D perturb(DoubleMatrix1D probVector) {
 		int size = probVector.size();
 		int indexToPerturb = RandomHelper.nextIntFromTo(0, size - 1);
 		DoubleMatrix1D perturbation = new SparseDoubleMatrix1D(size);
@@ -131,18 +132,18 @@ public class Utils {
 		DoubleMatrix1D perturbed = probVector.assign(perturbation, Functions.plus);
 		double totalPerturbed = perturbed.zSum();
 		return perturbed.assign(Functions.div(totalPerturbed));
-	}
+	}*/
 	
-	/*public static DoubleMatrix1D perturb(DoubleMatrix1D probVector) {
+	public static DoubleMatrix1D perturb(DoubleMatrix1D probVector) {
 		int size = probVector.size();
 		DoubleMatrix1D perturbation = DoubleFactory1D.dense.random(3);
 		double totalPerturbation = perturbation.zSum();
 		// Create a perturbation vector, which we will them sum to probVector
-		perturbation.assign(Functions.div(totalPerturbation * 10));
+		perturbation.assign(Functions.div(totalPerturbation * 100));
 		DoubleMatrix1D perturbed = probVector.assign(perturbation, Functions.plus);
 		double totalPerturbed = perturbed.zSum();
 		return perturbed.assign(Functions.div(totalPerturbed));
-	}*/
+	}
 	
 	public static DoubleMatrix2D perturb(DoubleMatrix2D strategy) {
 		DoubleMatrix2D perturbed = new DenseDoubleMatrix2D(strategy.rows(), strategy.columns());

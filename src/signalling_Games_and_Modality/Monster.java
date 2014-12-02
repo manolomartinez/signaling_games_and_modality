@@ -39,7 +39,13 @@ public class Monster {
     	life++;
     	if (life >= 2) {
     		if (type == 0) {
-    			type = RandomHelper.nextIntFromTo(1, 2);
+    			double typeChooser = RandomHelper.nextDoubleFromTo(0, 1);
+    			if (typeChooser > Utils.probAir) {
+    				type = 2;
+    			}
+    			else {
+    				type = 1;
+    			}
     			life = 0;
     		} else {
     			die();

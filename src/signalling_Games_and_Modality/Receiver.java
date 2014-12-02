@@ -133,7 +133,7 @@ public class Receiver {
     public void relocate() {
     	double newX = RandomHelper.nextDoubleFromTo(0, 50);
     	double newY = RandomHelper.nextDoubleFromTo(0, 50);
-    	System.out.println("Relocate receiver!");
+    	/*System.out.println("Relocate receiver!");*/
     	space.moveTo(this, newX, newY);
     }
     

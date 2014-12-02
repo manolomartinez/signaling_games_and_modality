@@ -42,7 +42,7 @@ public class Hunt {
 		}
 	
 		private void firstRound() {
-			System.out.println("A hunt starts");
+			/*System.out.println("A hunt starts");*/
 			DoubleMatrix1D senderStrat =
 					this.sender.strategy().viewRow(this.monster.type());
 			int senderMessage = Utils.weightedRandomChoice(senderStrat);
