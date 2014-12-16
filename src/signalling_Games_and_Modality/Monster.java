@@ -4,7 +4,9 @@
 package signalling_Games_and_Modality;
 
 import repast.simphony.context.Context;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.parameter.Parameters;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
@@ -36,11 +38,13 @@ public class Monster {
 
     @ScheduledMethod(start = 1, interval = 1)
     public void step() {
+    	Parameters params = RunEnvironment.getInstance().getParameters();
+    	double probAir = (double)params.getValue("probAir");
     	life++;
     	if (life >= 2) {
     		if (type == 0) {
     			double typeChooser = RandomHelper.nextDoubleFromTo(0, 1);
-    			if (typeChooser > Utils.probAir) {
+				if (typeChooser > probAir) {
     				type = 2;
     			}
     			else {

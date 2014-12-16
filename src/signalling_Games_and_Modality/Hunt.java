@@ -106,18 +106,13 @@ public class Hunt {
 			// return the payoff for a receiverAct attack 
 			// to monsters of type
 			
-			double probInvestment = 
-					this.receiver.investmentPolicy().get(0) + 
-					this.receiver.investmentPolicy().get(1);
-
-			double investment = Utils.maxInvestment * probInvestment;
-			
 			if (type - 1 == receiverAct) { // if type and attack match
 				return Utils.payoffInvestment(
-						this.receiver.investmentPolicy().get(receiverAct)) - investment;
+						Utils.maxInvestment * this.receiver.investmentPolicy().get(receiverAct)) - 
+						Utils.maxInvestment;
 			}
 			else {
-				return -1 * investment;
+				return -1 * Utils.maxInvestment;
 			}
 		}
 		

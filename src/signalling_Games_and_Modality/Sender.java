@@ -130,16 +130,16 @@ public class Sender {
     public void reproduce() {
     	Context<Object> context = ContextUtils.getContext(this);
     	double mutationProb = RandomHelper.nextDoubleFromTo(0, 1);
-    	Sender sender;
+    	Sender offspring;
     	if (mutationProb < 0.9) {
-    		sender =
-    			new Sender(space, energy * .45, this.strategy);
+    		offspring =
+    			new Sender(space, this.energy * .5, this.strategy);
     	}
     	else {
-    		sender =
-    			new Sender(space, energy * .45, Utils.perturb(this.strategy));
+    		offspring =
+    			new Sender(space, this.energy * .5, Utils.perturb(this.strategy));
     	}
-		context.add(sender);
+		context.add(offspring);
 		this.energy = this.energy *.5;
     }
     

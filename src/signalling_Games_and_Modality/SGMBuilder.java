@@ -7,6 +7,7 @@ import repast.simphony.context.space.graph.NetworkBuilder;
 import repast.simphony.context.space.grid.GridFactory;
 import repast.simphony.context.space.grid.GridFactoryFinder;
 import repast.simphony.dataLoader.ContextBuilder;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.continuous.RandomCartesianAdder;
@@ -52,6 +53,8 @@ public class SGMBuilder implements ContextBuilder<Object> {
 					/*Utils.initialReceiverStrat,
 					Utils.initialReceiverInvestmentPolicy*/));
 		}
+		
+		RunEnvironment.getInstance().endAt(20000);
 		
 		return context;
 	}

@@ -8,6 +8,8 @@ import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.jet.math.Functions;
+import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.parameter.Parameters;
 import repast.simphony.random.RandomHelper;
 
 public class Utils {
@@ -17,9 +19,9 @@ public class Utils {
 	final static int numberOfMessages = 3;
 	final static int numberOfActs = 3;
 	final static int startingEnergy = 100;
-	final static int reproducingEnergy = 150;
-	final static double probAir = 0.1; // probability of evo to air monster
-	
+	final static int reproducingEnergy = 125;
+
+	// probability of evo to air monster
 	final static DoubleMatrix2D senderPureStrats =
 			identityMatrix(numberOfStates, numberOfMessages);
 	
@@ -71,9 +73,10 @@ public class Utils {
 	}
 	
 	final static DoubleMatrix1D randomReceiverInvestmentPolicy() {
-		DoubleMatrix1D investment = DoubleFactory1D.dense.random(3);
-		double total = investment.zSum();
-		investment.assign(Functions.div(total));
+		double randomProb = Math.random();
+		double[] randomVector = {randomProb, 1 - randomProb};
+		DoubleMatrix1D investment = new DenseDoubleMatrix1D(2);
+		investment.assign(randomVector);
 		return investment;
 	}
 	
@@ -93,7 +96,7 @@ public class Utils {
 			new SparseDoubleMatrix2D(initialReceiverStratArray);
 	
 	static double[] initialReceiverInvestmentPolicyArray =
-		{1, 0, 0};
+		{1, 0};
 	
 	final static DoubleMatrix1D initialReceiverInvestmentPolicy = 
 			/* Proportion of air investment,
@@ -101,10 +104,10 @@ public class Utils {
 			 * proportion of "zero investment" */
 		new DenseDoubleMatrix1D(initialReceiverInvestmentPolicyArray);
 
-	final static double maxInvestment = 2;
+	final static double maxInvestment = 1;
 	
 	final static double payoffInvestment(double investment) {
-		return (20 - 10/Math.exp(4 * investment));
+		return (20 - 10/Math.exp(2 * investment));
 	}
 	
 	public static int weightedRandomChoice(DoubleMatrix1D probVector) {
@@ -134,13 +137,14 @@ public class Utils {
 		return perturbed.assign(Functions.div(totalPerturbed));
 	}*/
 	
-	public static DoubleMatrix1D perturb(DoubleMatrix1D probVector) {
+	public static DoubleMatrix1D perturb(double proportion, DoubleMatrix1D probVector) {
 		int size = probVector.size();
-		DoubleMatrix1D perturbation = DoubleFactory1D.dense.random(3);
+		DoubleMatrix1D perturbation = DoubleFactory1D.dense.random(size);
 		double totalPerturbation = perturbation.zSum();
 		// Create a perturbation vector, which we will them sum to probVector
-		perturbation.assign(Functions.div(totalPerturbation * 100));
-		DoubleMatrix1D perturbed = probVector.assign(perturbation, Functions.plus);
+		perturbation.assign(Functions.div(totalPerturbation / proportion));
+		DoubleMatrix1D perturbed = probVector.copy();
+		perturbed.assign(perturbation, Functions.plus);
 		double totalPerturbed = perturbed.zSum();
 		return perturbed.assign(Functions.div(totalPerturbed));
 	}
@@ -149,7 +153,7 @@ public class Utils {
 		DoubleMatrix2D perturbed = new DenseDoubleMatrix2D(strategy.rows(), strategy.columns());
 		for (int i = 0; i < strategy.rows(); i++) {
 			DoubleMatrix1D perturbedRow = 
-					perturb(strategy.viewRow(i));
+					perturb(0.01, strategy.viewRow(i));
 			for (int j = 0; j < strategy.rows(); j++) {
 				perturbed.set(i, j, perturbedRow.get(j));
 			}

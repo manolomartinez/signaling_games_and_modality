@@ -152,17 +152,17 @@ public class Receiver {
     public void reproduce() {
     	Context<Object> context = ContextUtils.getContext(this);
     	double mutationProb = RandomHelper.nextDoubleFromTo(0, 1);
-    	Receiver receiver;
+    	Receiver offspring;
     	if (mutationProb < 0.9) {
-    		receiver = new Receiver(space, energy * .45,
+    		offspring = new Receiver(space, this.energy * .5,
 				this.strategy ,this.investmentPolicy);
     	}
     	else {
-    		receiver = new Receiver(space, energy * .45,
+    		offspring = new Receiver(space, this.energy * .5,
     				Utils.perturb(this.strategy) ,
-    				Utils.perturb(this.investmentPolicy));
+    				Utils.perturb(0.01, this.investmentPolicy));
     	}
-		context.add(receiver);
+		context.add(offspring);
 		this.energy = this.energy * .5;
     }
 	public Hunt getMyHunt() {
